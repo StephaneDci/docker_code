@@ -1,0 +1,36 @@
+html {
+  font-family: arial, sans-serif;
+}
+
+Caption {
+  background-color: #ddcdfd;
+  letter-spacing: 1px;
+}
+
+thead th {
+  letter-spacing: 0px;
+  font-family: sans-serif
+}
+
+tbody td {
+  letter-spacing: 0px;
+}
+
+tbody td {
+  text-align: center;
+  font-size: 14px;
+}
+
+thead th {
+  background-color: #d5dbf0;
+  font-size: 15px;
+  font-weight: normal;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: white;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #d2d3d6;
+}

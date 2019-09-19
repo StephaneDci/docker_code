@@ -1,0 +1,17 @@
+
+-----------------------------
+ PHP-Apache Node Directory
+----------------------------
+
+Dockerfile              : file to build image
+confd-mpm-prefork.toml  : configuration confd for mpm-prefork
+confd-php.ini.toml      : configuration confd for php.ini
+mpm_prefork.conf.tmpl   : template file for mpm prefork for Apache
+php.ini.tmpl            : template file for php.ini
+start.sh                : configuration of container
+
+
+-----------------------------
+ CHANGE LOG
+----------------------------
+* 12.09.18              : Correction on start.sh containing confd 2*times (typo error)

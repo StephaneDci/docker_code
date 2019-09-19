@@ -1,0 +1,8 @@
+##Prometheus is Based on CAdvisor to present the metrics that will be used by Grafana
+
+prometheus.yml : configuration of prometheus
+Define where to scrap (CAdvisor) and where to expose
+
+## CHANGELOG
+
+01.04.2018		Adding node_exporter source to scrap by Prometheus

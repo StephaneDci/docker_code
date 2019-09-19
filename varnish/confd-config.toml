@@ -1,0 +1,13 @@
+[template]
+src  = "default.vcl.conf.tmpl"
+dest = "/etc/varnish/default.vcl"
+keys = [
+    "/php-apache/node",
+    "/varnish/confvcl/betimeout",
+    "/varnish/confvcl/probeinterval",
+    "/varnish/confvcl/maxconnectionbe",
+    "/varnish/confvcl/urihealthcheck",
+]
+# We dO NOT use direct service restart but custom script
+#reload_cmd = "/usr/sbin/service varnish reload"
+reload_cmd = "/opt/varnish-restart.sh"

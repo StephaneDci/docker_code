@@ -1,0 +1,6 @@
+## Here is one shot container (temporary) to execute script to register keys for confd in consul
+inspired on : https://stackoverflow.com/questions/30063907/using-docker-compose-how-to-execute-multiple-commands
+
+## CHANGELOG
+01.04.18	Creation of this container & migrating script from phpnode here (common keys that can be used by multiple containers)
+04.05.18        Modifying howto set the keys (previously direclty to consul call, now by the api python interface)

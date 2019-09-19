@@ -1,0 +1,28 @@
+
+############################
+#
+# Repository LOCAL
+#
+############################
+
+les binaires qui sont difficiles à télécharger derrière un proxy
+pour ce faire un container à lancer comme suit 
+
+docker run -it --rm --name http-server --network=glpiv3_admin -p 6789:6789 -v "$PWD":/usr/src/myapp -w /usr/src/myapp python:rc-alpine python httpserv.py 
+
+et a appeler côté container par exemple :  wget http-server:PORT/file
+
+
+# Attention le réseau docker correspondant doit exister
+# => docker network ls
+
+# l'exposition du port est optionnelle : -p 6789:6789
+
+
+
+#
+# USAGE
+#
+
+L'execution est automatique par le script build.sh qui détecte la présence de la variable d environnement PROXY=ON si le proxy est utilisé
+dans ce cas le script lance la creation du container pour la creation du serveur web

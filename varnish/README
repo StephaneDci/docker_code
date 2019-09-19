@@ -1,0 +1,17 @@
+##Varnish Image & Configuration
+
+confd-config.toml      : configuration of confd intput and output file and keys used
+default.vcl.conf.tmpl  : template of varnish configuration that will be used by confd
+Dockerfile             : Dockerfile for build the varnish image
+start                  : Script to run when starting the container (register keys in KV ...)
+varnish.env            : env variable
+varnish-restart.sh     : handle restart of varnish when configuration change (confd)
+
+
+##CHANGELOG
+
+01.04.18
+    Suppression of default.vcl : unused static configuration file for varnish , overwritten by confd and template
+    default.vcl.conf.tmpl      : correction of probe URI, adding /status.php otherwise the old "/" cause 302 when GLPI is not installed
+         			     thus causing error 503 on varnish (no backend) 
+    varnish-restart.sh         : add this script called by confd to properly handle restart of varnish (otherwise strange bugs with conf modification)

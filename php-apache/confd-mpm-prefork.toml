@@ -1,0 +1,11 @@
+[template]
+src  = "mpm_prefork.conf.tmpl"
+dest = "/etc/apache2/mods-available/mpm_prefork.conf"
+keys = [
+    "/php-apache/prefork/startserver",
+    "/php-apache/prefork/minspare",
+    "/php-apache/prefork/maxspare",
+    "/php-apache/prefork/maxworker",
+    "/php-apache/prefork/maxconn",
+]
+reload_cmd = "/usr/sbin/service apache2 reload"

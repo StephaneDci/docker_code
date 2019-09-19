@@ -1,0 +1,257 @@
+#############################################################################
+#                                                                           #
+#  Docker COMPOSE Configuration File for Dynamic Php App                    #
+#                                                                           #
+#  Application   : Apache / Php / Varnish / Mysql (master / Slave)          #
+#  KV & Registry : Consul / Registrator                                     #
+#  Supervision   : Cadvisor / Prometheus / Grafana                          #
+#                                                                           #
+#############################################################################
+
+version: '2'
+services:
+
+##########################################################################
+##                                                                      ##
+# Consul for Service Discovery & KV Database For Dynamic Configuration   #
+##                                                                      ##
+##########################################################################
+    consul:
+        image: progrium/consul
+        ports:
+            - 8300:8300
+            - 8301:8301
+            - 8301:8301/udp
+            - 8302:8302
+            - 8302:8302/udp
+            - 8400:8400
+            - 8500:8500
+#            - 53:53/udp
+        container_name: consul 
+        command: -server -bootstrap -ui-dir /ui
+        networks:
+            - admin 
+
+# Temporary container to start script to register keys in Consul KV
+    startup: 
+        build:
+            context: ./startup
+            dockerfile: Dockerfile
+        depends_on:
+            - consul
+            - python-api-consul
+        networks:
+            - admin 
+
+
+#Interface API consul for containers
+    python-api-consul:
+        build:
+            context: ./api-consul
+            dockerfile: Dockerfile
+        container_name: python-api-consul 
+        ports:
+            - 5001:5000
+        depends_on:
+            - consul
+        networks:
+            - admin 
+
+#
+# Service Discovery - Registrator
+#
+    registrator:
+        command: consul://consul:8500
+        image: gliderlabs/registrator:latest
+        container_name: registrator 
+        links:
+            - consul
+        volumes:
+            - "/var/run/docker.sock:/tmp/docker.sock"
+        networks:
+            - admin 
+
+
+##########################################
+##                                      ##
+#         EXECUTION LAYERS               #
+##                                      ##
+##########################################
+
+
+# Apache PHP NODE that can be scaled up  #
+# Aliase to mysql_master is db
+    nodephp:
+        env_file:
+            - env/glpi.env
+        build: 
+            context: ./php-apache
+            dockerfile: Dockerfile
+        expose: 
+            - "80"
+        depends_on: 
+            - mysql_master
+        links:
+            - mysql_master:db
+        volumes:
+            - glpi_data:/var/www/html/glpi
+        networks:
+            - front-office 
+            - back-office
+            - admin
+        restart: always
+    
+
+# Mysql Database Image for Replication
+    mysql_master:
+        build: 
+            context: ./mysql
+            dockerfile: Dockerfile
+        container_name: mysql_master
+        ports:
+            - "3306:3306"
+        env_file:
+            - env/glpi.env
+        volumes:
+            - mysql_data_master:/var/lib/mysql
+        networks:
+            - back-office 
+            - admin
+        depends_on: 
+            - python-api-consul
+        restart: unless-stopped
+
+    # Alias to mysql master is master
+    mysql_slave:
+        build: 
+            context: ./mysql
+            dockerfile: Dockerfile
+        depends_on:
+            - "mysql_master"
+        expose:
+            - "3306"      
+        env_file:
+            - env/glpi-slave.env
+# TODO find way to variabilize volume to enable to scale this containers
+        volumes:
+            - mysql_data_slave:/var/lib/mysql
+        links:
+            - mysql_master:master
+        networks:
+            - back-office 
+            - admin
+        restart: unless-stopped
+
+
+#### Varnish
+# Note : when supplying container_name it won't be scalable 
+    varnish: 
+        build: 
+            context: ./varnish
+            dockerfile: Dockerfile
+        env_file:
+            - varnish/varnish.env
+        container_name: varnish 
+        ports:
+            - "8080:6081"
+        depends_on: 
+            - nodephp
+        links:
+            - nodephp
+        networks:
+            - front-office 
+            - admin
+        restart: always
+
+#############################################################
+##                                                         ##
+#  Monitoring Layer with cadvisor / prometheus / grafana   #
+##                                                         ##
+#############################################################
+
+
+    # Cadvisor to expose Docker metrics
+    cadvisor:
+        image: google/cadvisor
+        container_name: cadvisor
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:rw
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
+        ports:
+            - "8005:8080"
+        networks:
+            - admin
+
+    # Prometheus Layer that scraps metrics from exporter & CAdvisor
+    prometheus:
+        image: prom/prometheus:v2.0.0
+        container_name: prometheus
+        volumes:
+            - ./prometheus/:/etc/prometheus/
+            - prometheus-data:/prometheus
+        command:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--web.console.libraries=/etc/prometheus/console_libraries'
+            - '--web.console.templates=/etc/prometheus/consoles'
+            - '--storage.tsdb.retention=200h'
+        depends_on: 
+            - cadvisor 
+            - node-exporter
+        ports:
+            - "9090:9090"
+        networks:
+            - admin
+
+    # Node exporter for Prometheus
+    # exemple : https://grafana.com/dashboards/893
+    node-exporter:
+        image: prom/node-exporter:latest
+        container_name: monitoring_node_exporter
+        restart: unless-stopped
+        expose:
+            - 9100
+        networks:
+            - admin
+
+    # Grafana 
+    grafana:
+        build: 
+            context: ./grafana
+            dockerfile: Dockerfile
+        container_name: grafana
+        volumes:
+            - grafana-data:/var/lib/grafana
+        env_file:
+            - grafana/grafana.env
+        depends_on: 
+            - prometheus 
+        ports:
+            - "3000:3000"
+        expose:
+            - 3000
+        networks:
+            - admin
+
+#
+# Datavolumes
+#
+volumes:
+    glpi_data:          {}
+    mysql_data_slave:   {}
+    mysql_data_master:  {}
+    prometheus-data:    {}
+    grafana-data:       {}
+
+#
+# Networks
+#
+networks:
+    front-office:
+        driver: bridge
+    back-office:
+        driver: bridge
+    admin:
+        driver: bridge

@@ -1,0 +1,46 @@
+#!/bin/bash
+##########################################################################################
+# Register in Consul KV the varnish Parameters
+# Desactivation des ulimit dans le script de relance de varnish (pose des problèmes...)
+# Lancement de confd
+##########################################################################################
+
+echo ""
+echo "==================================================================="
+echo ""
+echo "---- VARNISH: CONTAINER INITIALIZING : $HOSTNAME ..."
+echo ""
+echo "==================================================================="
+echo ""
+echo ""
+echo "-------------------------------------------------------------------"
+echo "---- VARNISH: Correcting BUG in varnish start script (ulimit)  ----"
+echo "-------------------------------------------------------------------"
+echo ""
+echo 'sed -i -e "s/ulimit/#ulimit/g" /etc/init.d/varnish'
+sed -i -e "s/ulimit/#ulimit/g" /etc/init.d/varnish
+echo ""
+#echo "----------------------------------------------"
+#echo "---- VARNISH: Consul: varnish parameters  ----"
+#echo "----------------------------------------------"
+#echo "...See Startup Container..."
+#echo ""
+echo "------------------------------------------------"
+echo "---- VARNISH: Confd: init watcher of modif  ----"
+echo "------------------------------------------------"
+echo ""
+echo "(/opt/confd/bin/confd -config-file /etc/confd/conf.d/confd-config.toml -backend consul -node consul:8500 -interval 5)&"
+(sleep 4 ; /opt/confd/bin/confd -config-file /etc/confd/conf.d/confd-config.toml -backend consul -node consul:8500 -interval 5)&
+echo ""
+echo "------------------------------------------------"
+echo "---- VARNISH: Starting Daemon and Logging   ----"
+echo "------------------------------------------------"
+echo ""
+# Attention on ne peut pas démarrer le démon comme ceci
+# Dans ce cas il risque d'y avoir collision entre confd qui utilise systemd (varnish restart) et le lancement de varnishd en background 
+#echo "(varnishd -f /etc/varnish/default.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT})&"
+#(varnishd -f /etc/varnish/default.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT}&
+sleep 1;
+echo "service varnish restart ..."
+service varnish restart
+varnishlog 
