@@ -1,0 +1,52 @@
+#!/bin/sh
+#
+# Script modifying Configuration in CONSUL direclty
+#
+echo "------------------------------------------------"
+echo " STARTUP SCRIPT FOR REGISTRING KEYS IN CONSUL   " 
+echo "------------------------------------------------"
+echo ""
+echo "------------------------------------------------"
+echo " >> NODEPHP: Consul Registering Config Keys ... "
+echo "------------------------------------------------"
+echo ""
+echo "MPM Prefork Keys"
+echo ""
+echo "curl -s -X PUT -d '5'   http://consul:8500/v1/kv/php-apache/prefork/startserver"
+echo "curl -s -X PUT -d '5'   http://consul:8500/v1/kv/php-apache/prefork/minspare"
+echo "curl -s -X PUT -d '10'  http://consul:8500/v1/kv/php-apache/prefork/maxspare"
+echo "curl -s -X PUT -d '150' http://consul:8500/v1/kv/php-apache/prefork/maxworker"
+echo "curl -s -X PUT -d '0'   http://consul:8500/v1/kv/php-apache/prefork/maxconn"
+curl -s -X PUT -d '5'   http://consul:8500/v1/kv/php-apache/prefork/startserver
+curl -s -X PUT -d '5'   http://consul:8500/v1/kv/php-apache/prefork/minspare
+curl -s -X PUT -d '10'  http://consul:8500/v1/kv/php-apache/prefork/maxspare
+curl -s -X PUT -d '150' http://consul:8500/v1/kv/php-apache/prefork/maxworker
+curl -s -X PUT -d '0'   http://consul:8500/v1/kv/php-apache/prefork/maxconn
+echo ""
+echo "PHP.ini Keys"
+echo ""
+echo "curl -s -X PUT -d '128M'   http://consul:8500/v1/kv/php-apache/php/opcachesize"
+echo "curl -s -X PUT -d '5000'   http://consul:8500/v1/kv/php-apache/php/maxacceleratedfiles"
+echo "curl -s -X PUT -d 'Off'    http://consul:8500/v1/kv/php-apache/php/exposephp"
+echo "curl -s -X PUT -d '128M'   http://consul:8500/v1/kv/php-apache/php/memorylimit"
+echo "curl -s -X PUT -d '8M'     http://consul:8500/v1/kv/php-apache/php/postmaxsize"
+echo "curl -s -X PUT -d '2M'     http://consul:8500/v1/kv/php-apache/php/uploadmaxsize"
+curl -s -X PUT -d '128M'   http://consul:8500/v1/kv/php-apache/php/opcachesize
+curl -s -X PUT -d '5000'   http://consul:8500/v1/kv/php-apache/php/maxacceleratedfiles
+curl -s -X PUT -d 'Off'    http://consul:8500/v1/kv/php-apache/php/exposephp
+curl -s -X PUT -d '128M'   http://consul:8500/v1/kv/php-apache/php/memorylimit
+curl -s -X PUT -d '8M'     http://consul:8500/v1/kv/php-apache/php/postmaxsize
+curl -s -X PUT -d '2M'     http://consul:8500/v1/kv/php-apache/php/uploadmaxsize
+echo ""
+echo "---------------------------------------------------"
+echo " >> VARNISH: Consul Registering Config Keys ... "
+echo "---------------------------------------------------"
+echo ""
+echo "curl -s -X PUT -d '100'     http://consul:8500/v1/kv/varnish/confvcl/maxconnectionbe"
+echo "curl -s -X PUT -d '5s'      http://consul:8500/v1/kv/varnish/confvcl/betimeout"
+echo "curl -s -X PUT -d '10s'     http://consul:8500/v1/kv/varnish/confvcl/probeinterval"
+echo "curl -s -X PUT -d 'GET /status.php HTTP/1.1' http://consul:8500/v1/kv/varnish/confvcl/urihealthcheck"
+curl -s -X PUT -d '100'           http://consul:8500/v1/kv/varnish/confvcl/maxconnectionbe
+curl -s -X PUT -d '5s'            http://consul:8500/v1/kv/varnish/confvcl/betimeout
+curl -s -X PUT -d '10s'           http://consul:8500/v1/kv/varnish/confvcl/probeinterval
+echo ""

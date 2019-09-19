@@ -1,0 +1,30 @@
+================================================
+      CONSTRUCTION OF MYSQL IMAGE
+================================================
+
+Dockerfile			DockerFile for installation of confd and other tools
+init-slave.sh			Script to initialize slave
+replication-entrypoint.sh	Entrypoint , determining who is master / slave, creating replication stuff
+
+
+===============================================
+ HOW TO LAUNCH A NEW MYSQL SLAVE INSTANCE
+===============================================
+
+from root directory,  (from here : cd ..)
+-----------------------------------------
+docker run  -v /datavol:/var/lib/mysql --expose 3306 --link mysql_master:master --network=glpiv3_back-office --network=glpiv3_admin  --env-file env/glpi-slave.env glpiv3_mysql_slave
+
+NB  cannot launch with docker-compose because of datavolume cannot be dynamic (solution not found)
+NB2 You should use a different datavolume each time ie  -v /datavolX 
+NB3 Be Careful with network name that depends on build directories please check with docker network ls idem for docker image name
+
+DONT FORGET TO STOP AND RM THE CONTAINER MANUALLY AND ITS DATAVOLUME on the HOST
+
+
+
+CHANGELOG
+
+    14.04.18          Suppression of Python on Mysql image (used to retrieved from KV Consul) image 720Mo => 467Mo
+    14.04.18          Adding curl script on Python-API-Consul to retrieve KV value from Consul
+    06.05.18          Bugfix: Adding sleep Time before the TCP mysqldump to replicate to Slave          

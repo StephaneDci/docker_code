@@ -1,0 +1,34 @@
+<html !DOCTYPE>
+<head>
+  <title>Operation registered on Consul</title>
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<table>
+  <caption> Values from Consul </caption>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Operation</th>
+      <th>Key</th>
+      <th>Value</th>
+      <th>Updated on</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for item in listitem %}
+    <tr>
+      <td><a href="{{ item['url'] }}">{{ item['id'] }}</a> </td>
+      <td>{{ item['operation'] }}</td>
+      <td>{{ item['key'] }}</td>
+      <td>{{ item['val'] }}</td>
+      <td>{{ item['date'] }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+</body>
+</html>

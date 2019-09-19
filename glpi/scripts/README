@@ -1,0 +1,15 @@
+## Bash script to facilitate exploitation of the project
+
+build.sh :        to start the project, rebuild the containers & destroy consul datavolume & container
+healthcheck.sh :  to verify the health of the project
+scaledown.sh   :  to scale down one node of apache-php : stop the containers and delete the keys in CONSUL
+api-rest.php   :  to use API of GLPI and automate ticket creation
+replaceProxy.sh:  script to replace HTTP(S)_PROXY value in DockerFile of the project
+
+
+## CHANGELOG
+
+01.04.18	modify suppression of some containers in build.sh
+04.04.18	add a script to automate GLPI ticket creation via API
+06.04.18	update healthcheck on mysql_slave to check by docker ID (for scalability)
+01.05.18        modify build script to integrate proxy configuration and if necessary launch python webserver container

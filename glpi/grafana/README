@@ -1,0 +1,40 @@
+## Setting UP grafana Dashboarding for the project and automatically deploy Dashboards
+### Inspired by https://ops.tips/blog/initialize-grafana-with-preconfigured-dashboards/
+### https://github.com/cirocosta/sample-grafana/tree/master/grafana
+
+Dockerfile				Construct Grafana image
+grafana.env				Env file surcharging some variables (useless since grafana 5.x)
+start.sh				Creating directories structure & creating prometheus DS via API
+grafana.ini				Mainly configure where grafana should search for deploying dashboards automatically	
+
+dashboards/
+    dashboard-docker.json		A dashboard to be deploy for docker
+    dashboard-doc-sys-monit.json	Grafana dashboard 893  with node-exporter
+    dashboard-linux-mem.json		Grafana dashboard 2747 with node-exporter
+
+provisioning/				Directory that enable to automaticaly provision dashboard
+    dashboards/
+        provision-dashboards.yaml	Configuration file (standard)
+    datasource/
+        provision-datasource.yaml	Configuration file for creating Prometheus Datasource
+
+## If you want to install plugins
+# https://github.com/grafana/grafana-docker/issues/134
+
+# with Dockerfile (at build time)
+# see Dockerfile
+
+# Or at startup (in env file)
+GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+
+
+## CHANGELOG
+
+02.04.18	Migration from Grafana 4.X to Grafana 5.X
+		Review of Dashboards provisioning (dashboard + datasource) : configuration files & dashboard
+
+29.04.19        Migrate Last Grafana Version
+                Install plugins when building images
+                New Dashboard provisionned and new Datasource
+                correcting config.ini is renamed grafana.ini
+                

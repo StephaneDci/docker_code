@@ -1,0 +1,12 @@
+[template]
+src  = "php.ini.tmpl"
+dest = "/etc/php/7.1/apache2/php.ini"
+keys = [
+	"/php-apache/php/exposephp",
+	"/php-apache/php/memorylimit",
+	"/php-apache/php/postmaxsize",
+	"/php-apache/php/uploadmaxsize",
+	"/php-apache/php/opcachesize",
+	"/php-apache/php/maxacceleratedfiles",
+]
+reload_cmd = "/usr/sbin/service apache2 restart"

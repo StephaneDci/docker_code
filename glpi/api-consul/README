@@ -1,0 +1,69 @@
+############################
+#
+# Interface API Consul
+#
+############################
+
+l'interface API pour consul afin de récuper des données dans la base KV
+
+# Construction de l'image et lancement manuel 
+
+docker build . -t pythonapiconsul
+docker run -it --rm -p 5000:5000 --name python-api-consul --network=glpiv3_admin pythonapiconsul 
+
+## ATTENTION le nom du reseau dépend du répertoire de build de l'image
+pour verifier docker network prune -f ; docker network ls
+
+# Utilisation 
+
+##from host
+curl -vvv  "127.0.0.1:5000/setval?key=mykey&value=myvalue" --noproxy 127.0.0.1
+curl -vvv  "127.0.0.1:5000/getval?key=mykey" --noproxy 127.0.0.1
+
+
+##from container
+docker exec -it mysql_master bash
+curl -vvv python-api-consul:5000/ --noproxy python-api-consul
+
+
+# API specs v1
+
+<context>
+
+/		                        for testing will display a greeting banner
+/getval?key=<mykey>                     will getvalue of mykey from consul
+/incval		                        will incvalue from consul
+/decval		                        will decvalue from consul
+/setval?key=<mykey>&value=<myvalue>     will set mykey to myvalue
+
+
+## TODO
+
+    - enable to post args
+    - enable to retrieve other keys
+
+### New version on Python 3.6
+
+## To import from Pycharm on host
+* Don't forget to modify lignes to import modules on restapi.py file
+* Don't forget to modify Dockerfile with correct version
+* Don't forget to check proxy and os.ENVIRON in python , proxies in python and proxy in env
+* Don't forget to SET NO_PROXY consul in Dockerfile for phpnode and varnish 
+
+#### Tests
+#from VM
+docker build . -t newpython 
+docker run -it --rm -p 5001:5000 --name python-api-consul2 --network=glpiv3_admin newpython
+curl "http://127.0.0.1:5001/getval?key=/v1/kv/mysqld/serverid" --noproxy 127.0.0.1
+curl "http://127.0.0.1:5001/setval?val=5&key=/v1/kv/mysqld/serverid" --noproxy 127.0.0.1
+curl "http://127.0.0.1:5001/setval?val=3&key=/v1/kv/mysqld/serverid" --noproxy 127.0.0.1
+curl "http://127.0.0.1:5001/gethisto?table=KV" --noproxy 127.0.0.1
+
+#on Host
+# http://192.168.158.129:5001/gethisto?table=KV
+# http://192.168.158.129:5001/setval?key=/v1/kv/varnish/confvcl/probeinterval&val=5s
+# http://192.168.158.129:5001/setval?key=/v1/kv/php-apache/prefork/maxworker&val=150
+
+
+# API specs v2
+# TODO

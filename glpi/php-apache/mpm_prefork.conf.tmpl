@@ -1,0 +1,7 @@
+<IfModule mpm_prefork_module>
+	StartServers		{{getv "/php-apache/prefork/startserver"}}
+	MinSpareServers		{{getv "/php-apache/prefork/minspare"}}
+	MaxSpareServers		{{getv "/php-apache/prefork/maxspare"}}
+	MaxRequestWorkers	{{getv "/php-apache/prefork/maxworker"}}
+	MaxConnectionsPerChild  {{getv "/php-apache/prefork/maxconn"}}
+</IfModule>

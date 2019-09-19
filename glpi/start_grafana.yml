@@ -1,0 +1,35 @@
+# lancement : docker-compose -f start_grafana.yml up --build
+# nettoyage:  docker rm grafana; docker volume prune -f
+
+version: '2'
+services:
+
+# Grafana 
+    grafana:
+        build: 
+            context: ./grafana
+            dockerfile: Dockerfile
+        container_name: grafana
+        volumes:
+            - grafana-data:/var/lib/grafana
+        env_file:
+            - grafana/grafana.env
+        ports:
+            - "3000:3000"
+        expose:
+            - 3000
+        networks:
+            - admin
+
+#
+# Datavolumes
+#
+volumes:
+    grafana-data:       {}
+
+#
+# Networks
+#
+networks:
+    admin:
+        driver: bridge
