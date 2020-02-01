@@ -6,8 +6,8 @@ LABEL "Description"="############ Mysql master-Slave: Container image ##########
 ##
 
 # Definition Proxy
-#ENV http_proxy ""
-#ENV https_proxy ""
+#ENV http_proxy "http://
+#ENV https_proxy "https://
 
 # Update the package repository
 RUN apt-get update --allow-unauthenticated
@@ -17,7 +17,7 @@ RUN apt-get install -y wget curl vim net-tools lsof iputils-ping
 
 
 #install confd
-RUN wget https://github.com/kelseyhightower/confd/releases/download/v0.15.0/confd-0.15.0-linux-amd64
+RUN wget http://http-server:6789/confd-0.15.0-linux-amd64 --no-proxy
 RUN mkdir -p /opt/confd/bin && mv confd-0.15.0-linux-amd64 /opt/confd/bin/confd && chmod +x /opt/confd/bin/confd && mkdir -p /etc/confd/{conf.d,templates}
 
 # A little bit of cleaning

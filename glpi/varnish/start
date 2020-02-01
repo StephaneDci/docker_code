@@ -38,9 +38,11 @@ echo "------------------------------------------------"
 echo ""
 # Attention on ne peut pas démarrer le démon comme ceci
 # Dans ce cas il risque d'y avoir collision entre confd qui utilise systemd (varnish restart) et le lancement de varnishd en background 
-#echo "(varnishd -f /etc/varnish/default.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT})&"
-#(varnishd -f /etc/varnish/default.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT}&
-sleep 1;
+mkdir -p /var/lib/varnish/`hostname` && chown nobody /var/lib/varnish/`hostname`
+sleep 3;
+echo "(varnishd -f /etc/varnish/default.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT})&"
+(varnishd -f /etc/varnish/default.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT})&
 echo "service varnish restart ..."
-service varnish restart
+#service varnish restart
 varnishlog 
+#/bin/bash

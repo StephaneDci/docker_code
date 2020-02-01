@@ -15,3 +15,4 @@ varnish-restart.sh     : handle restart of varnish when configuration change (co
     default.vcl.conf.tmpl      : correction of probe URI, adding /status.php otherwise the old "/" cause 302 when GLPI is not installed
          			     thus causing error 503 on varnish (no backend) 
     varnish-restart.sh         : add this script called by confd to properly handle restart of varnish (otherwise strange bugs with conf modification)
+docker build --network=glpi_admin . -t glpi_varnish

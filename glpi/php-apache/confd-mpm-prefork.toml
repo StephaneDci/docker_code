@@ -1,6 +1,6 @@
 [template]
 src  = "mpm_prefork.conf.tmpl"
-dest = "/etc/apache2/mods-available/mpm_prefork.conf"
+dest = "/etc/apache2/conf.d/mpm.conf"
 keys = [
     "/php-apache/prefork/startserver",
     "/php-apache/prefork/minspare",
@@ -8,4 +8,4 @@ keys = [
     "/php-apache/prefork/maxworker",
     "/php-apache/prefork/maxconn",
 ]
-reload_cmd = "/usr/sbin/service apache2 reload"
+reload_cmd = "/usr/sbin/httpd -k stop && /usr/sbin/httpd -k start -D BACKGROUND"

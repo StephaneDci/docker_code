@@ -1,34 +1,73 @@
 # Custom image build earlier
-FROM ubuntu_artful:latest
+#FROM ubuntu_artful:latest
+FROM glpi_alpine_base
 MAINTAINER stephane 
-LABEL "DESCRIPTION"="############# PHP7-HTTPD CONTAINER ##############"
+LABEL "DESCRIPTION"="############# PHP-HTTPD CONTAINER ##############"
 
-# If Proxy needed or not
-#ENV http_proxy ""
-#ENV https_proxy ""
 
-# Install apache2
-RUN apt-get update && apt-get install -y apache2
+RUN apk add --update --no-cache bash \
+				curl \
+				php5-openssl \
+				#php5-dba \
+				#php5-pear \
+				php5-pdo_mysql \
+				php5-common \
+				#php5-xsl \
+				#php5-fpm \	
+				#php5-mysql \
+				php5-mysqli \
+				#php5-pspell \
+				php5-xmlrpc \
+				#php5-embed \
+				#php5-pdo_sqlite \
+				php5-exif \
+				php5-opcache \
+				#php5-posix \	
+				php5-gd  \
+				#php5-gettext \
+				php5-json \
+				php5-xml \
+				php5 \
+				php5-iconv \
+				#php5-sysvshm \
+				php5-curl \
+				#php5-odbc \
+				php5-phar \
+				#php5-pdo_pgsql \
+				php5-imap \
+				#php5-pdo_dblib \
+				#php5-pdo_odbc \
+				#php5-xdebug \
+				#php5-zip \
+				php5-apache2 \
+				#php5-cgi \
+				php5-ctype \
+				#php5-mcrypt \
+				#php5-wddx \
+				#php5-bcmath \
+				#php5-calendar \
+				#php5-dom \
+				#php5-sockets \
+				#php5-soap \
+				php5-apcu \
+				#php5-sysvmsg \
+				php5-zlib \
+				#php5-ftp \
+				#php5-sysvsem \ 
+				php5-pdo \
+				#php5-bz2 \
+  				apache2 \
+				#libxml2-dev \
+				apache2-utils
 
-# Install php & dependancy
-RUN apt-get install -y --force-yes \
-  php7.1 \
-  php7.1-mysql \
-  php7.1-ldap \
-  php7.1-xmlrpc \
-  php7.1-curl \
-  php7.1-gd \
-  php7.1-mbstring \
-  php7.1-simplexml \
-  php7.1-xml \
-  php7.1-apcu \
-  php7.1-imap
 
-# Activation of modules & cleaning some dirs
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* && a2enmod rewrite && a2enmod headers && service apache2 stop
+RUN curl -sS https://getcomposer.org/installer | php5 -- --install-dir=/usr/bin --filename=composer 
+RUN rm -rf /var/cache/apk/*
+RUN mkdir -p /run/apache2
+
 WORKDIR /var/www/html
 COPY start.sh /opt/
-RUN chmod +x /opt/start.sh && usermod -u 1000 www-data
+RUN chmod +x /opt/start.sh
 
 #apache mpm-prefork  template for confd
 ADD confd-mpm-prefork.toml  /etc/confd/conf.d/confd-mpm-prefork.toml
@@ -38,11 +77,12 @@ ADD mpm_prefork.conf.tmpl   /etc/confd/templates/mpm_prefork.conf.tmpl
 ADD confd-php.ini.toml     /etc/confd/conf.d/confd-php.ini.toml
 ADD php.ini.tmpl           /etc/confd/templates/php.ini.tmpl
 
-# apache Vhost config
-ADD glpi_vhost.conf        /etc/apache2/sites-enabled/000-default.conf
+# apache config
+ADD glpi_vhost.conf        /etc/apache2/conf.d/000-glpi.conf
+ADD glpi_httpd.conf        /etc/apache2/httpd.conf
 
 #TODO
 ENV no_proxy "consul"
 
-
 CMD /opt/start.sh
+#CMD /bin/ash 

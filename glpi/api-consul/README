@@ -8,8 +8,8 @@ l'interface API pour consul afin de récuper des données dans la base KV
 
 # Construction de l'image et lancement manuel 
 
-docker build . -t pythonapiconsul
-docker run -it --rm -p 5000:5000 --name python-api-consul --network=glpiv3_admin pythonapiconsul 
+docker build . -t glpi_python-api-consul #--build-arg http_proxy=http://127.0.0.1:3128
+docker run -it --rm -p 5000:5000 --name python-api-consul --network=glpi_admin glpi_python-api-consul 
 
 ## ATTENTION le nom du reseau dépend du répertoire de build de l'image
 pour verifier docker network prune -f ; docker network ls

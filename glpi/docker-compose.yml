@@ -8,7 +8,7 @@
 #                                                                           #
 #############################################################################
 
-version: '2'
+version: '3.4'
 services:
 
 ##########################################################################
@@ -26,7 +26,6 @@ services:
             - 8302:8302/udp
             - 8400:8400
             - 8500:8500
-#            - 53:53/udp
         container_name: consul 
         command: -server -bootstrap -ui-dir /ui
         networks:
@@ -37,6 +36,7 @@ services:
         build:
             context: ./startup
             dockerfile: Dockerfile
+            network: glpi_admin
         depends_on:
             - consul
             - python-api-consul
@@ -49,6 +49,7 @@ services:
         build:
             context: ./api-consul
             dockerfile: Dockerfile
+            network: glpi_admin
         container_name: python-api-consul 
         ports:
             - 5001:5000
@@ -87,6 +88,7 @@ services:
         build: 
             context: ./php-apache
             dockerfile: Dockerfile
+            network: glpi_admin
         expose: 
             - "80"
         depends_on: 
@@ -96,8 +98,8 @@ services:
         volumes:
             - glpi_data:/var/www/html/glpi
         networks:
-            - front-office 
-            - back-office
+          #- front-office 
+          # - back-office
             - admin
         restart: always
     
@@ -107,6 +109,7 @@ services:
         build: 
             context: ./mysql
             dockerfile: Dockerfile
+            network: glpi_admin
         container_name: mysql_master
         ports:
             - "3306:3306"
@@ -115,7 +118,7 @@ services:
         volumes:
             - mysql_data_master:/var/lib/mysql
         networks:
-            - back-office 
+          #- back-office 
             - admin
         depends_on: 
             - python-api-consul
@@ -126,6 +129,7 @@ services:
         build: 
             context: ./mysql
             dockerfile: Dockerfile
+            network: glpi_admin
         depends_on:
             - "mysql_master"
         expose:
@@ -138,7 +142,7 @@ services:
         links:
             - mysql_master:master
         networks:
-            - back-office 
+          #- back-office 
             - admin
         restart: unless-stopped
 
@@ -149,6 +153,7 @@ services:
         build: 
             context: ./varnish
             dockerfile: Dockerfile
+            network: glpi_admin
         env_file:
             - varnish/varnish.env
         container_name: varnish 
@@ -159,7 +164,7 @@ services:
         links:
             - nodephp
         networks:
-            - front-office 
+          #- front-office 
             - admin
         restart: always
 
@@ -186,7 +191,7 @@ services:
 
     # Prometheus Layer that scraps metrics from exporter & CAdvisor
     prometheus:
-        image: prom/prometheus:v2.0.0
+        image: prom/prometheus:v2.15.0
         container_name: prometheus
         volumes:
             - ./prometheus/:/etc/prometheus/
@@ -204,6 +209,8 @@ services:
             - "9090:9090"
         networks:
             - admin
+        env_file:
+            - prometheus/prometheus.env
 
     # Node exporter for Prometheus
     # exemple : https://grafana.com/dashboards/893
@@ -249,9 +256,9 @@ volumes:
 # Networks
 #
 networks:
-    front-office:
-        driver: bridge
-    back-office:
-        driver: bridge
+  #    front-office:
+  #      driver: bridge
+  #  back-office:
+  #      driver: bridge
     admin:
         driver: bridge

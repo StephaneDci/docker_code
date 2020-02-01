@@ -11,6 +11,7 @@ import os
 ###
 
 def check_host_connection(host, proxies):
+    os.environ['no_proxy'] = '*' 
     try:
         r = requests.get(host, timeout=2, proxies=proxies)
         r.raise_for_status()

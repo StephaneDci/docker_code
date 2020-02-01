@@ -83,7 +83,6 @@ sub vcl_recv {
        # If there are no more cookies, remove the header to get page cached.
        unset req.http.Cookie;
     }
-
 }
 
 #

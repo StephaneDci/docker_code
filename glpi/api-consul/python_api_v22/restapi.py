@@ -17,7 +17,6 @@ userdb.create_table(con, "KV")
 
 # Definition of the Consul url host
 # host = 'http://consul:8500'           # Between Container
-# host = 'http://192.168.158.129:8500'  # From Host
 # host = 'http://127.0.0.1:8500'        # From VM
 
 # Exemple d'une Cle complète : '/v1/kv/mysqld/serverid'
@@ -25,7 +24,7 @@ userdb.create_table(con, "KV")
 prefix_key = '/v1/kv/'
 proxies = {"http": None, "https": None, }
 headers = {'User-Agent': 'Mozilla/5.0'}
-possible_hosts = ['http://consul:8500', 'http://192.168.158.129:8500', 'http://127.0.0.1:8500']
+possible_hosts = ['http://consul:8500', 'http://127.0.0.1:8500']
 
 host = consul.check_and_set_kv_host(possible_hosts, proxies)
 if not host:

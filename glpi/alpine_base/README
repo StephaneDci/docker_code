@@ -1,0 +1,3 @@
+docker build . -t alpine_base
+# si en local derriere un reseau docker deja cree (le même que celui utilise pour le container local_repo)
+docker build --network=glpi_admin . -t alpine_base

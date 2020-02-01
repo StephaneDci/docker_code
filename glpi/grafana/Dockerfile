@@ -1,4 +1,3 @@
-#FROM        grafana/grafana:latest
 FROM        grafana/grafana:latest
 LABEL	    "DESCRIPTION"="######### GRAFANA CONTAINER #########"
 MAINTAINER  Stephane 

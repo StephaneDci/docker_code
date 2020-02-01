@@ -3,12 +3,12 @@
 ----------------------------------------------------------------------------------------------------
 
 #  POC  with Docker-Compose
- Version      : 1.2
+ Version      : 1.4
 
 #  Description : 
 
 ##    -> Execution Layer 
-        - Custom OS : image based on ubuntu
+        - Custom OS : image based on alpine
         - Phpnode : (stateless & scalable) : apache / php that get code source from REPO (ie glpi)
         - Varnish caching (with dynamic configuration with confd / consul)
         - Mysql Database with replication
@@ -31,7 +31,6 @@ Also in this Execution Layer :
         - CORE:          if not K8S provision with CoreOS / fleet
         - CONTAINER:	 Add a user in Dockerfile to replace root user
         - SECU:          Find technical way for confidential information (ie proxy credentials)
-        - OS:            Migrate from UBUNTU to ALPINE image to have the smallest image
         - OS:            Try to build confd with multistage boot to have smallest image possible
         - OS:            Integrate build of OS image in docker-compose file if possible
         - CONSUL:        Use Service Discovery of Consul and DNS (usage to define ;-))
@@ -54,6 +53,7 @@ Also in this Execution Layer :
                         LOCAL-REPO: Write down an HTTP-server that enable client behind proxy to download some files
                         API-CONSUL:    Define an applicative API in order to enable client to get value in KV
         - 07.05.18      Remove Expose command in docker-compose.yml when port directive was present
+	- 15.01.20	Migrate to Alpine Image
 	- Please See Changelog of each Section for more information
 
 =====================================================================================================
@@ -62,11 +62,11 @@ NB :apache php Node is Based on  https://github.com/driket/docker-glpi
 
 
 ##  Build OS image
-### Based on ubuntu & containing confd & some more tools (net-tools,wget, curl)
+### Based on Alpine & containing confd & some more tools (net-tools,wget, curl)
 
-cd ubuntu-artful
-docker build . -t ubuntu_artful
-TODO : migrate on alpine image
+cd alpine_base
+docker network create -d bridge glpi_admin
+docker build . -t alpine_base --network=glpi_admin
 
 ##  Run docker-compose (necessary to destroy consul datavolume)
 
@@ -82,14 +82,19 @@ OR
 
 server :  db
 user :    glpi
-schema :  glpi
 password: glpipaswd 
+
+schema :  glpi
 
 For the replicated MYSQL image is based on 
 https://github.com/bergerx/docker-mysql-replication
 
 ### To Access Varnish frontend :
 Varnish  access : http://127.0.0.1:8080
+
+### To Connect to GLPI interface
+glpi / glpi
+tech / tech
 
 ### To scale UP apache-php Node
 
